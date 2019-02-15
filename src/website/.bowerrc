@@ -1,0 +1,5 @@
+﻿{ 
+  "proxy": "http://bcontent:80",
+  "https-proxy":"http://bcontent:80",
+  "strict-ssl": false
+}

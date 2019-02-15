@@ -1,0 +1,35 @@
+﻿@page
+@model Vehicles.Web.Pages.Vehicles.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] += " Listing";
+}
+<div>
+    <a asp-page="edit">Add New Vehicle</a>
+    <hr class="md-2" />
+    <table>
+        <thead>
+            <tr>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in Model.Vehicles)
+            {
+                <tr>
+                    <td>
+                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Model.Make.Name</a>
+                    </td>
+                    <td>
+                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Model.Name</a>
+                    </td>
+                    <td>
+                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Year.ToString()</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

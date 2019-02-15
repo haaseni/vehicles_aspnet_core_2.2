@@ -1,0 +1,58 @@
+﻿@page "{id:int}"
+@model Vehicles.Web.Pages.Vehicles.DetailModel
+@{
+    ViewData["Title"] += " Details";
+}
+<div class="container-fluid">
+    <div id="messages"></div>
+    <a asp-page="Edit" asp-route-id="@Model.VehicleId">Edit</a>
+    <div id="makeField" class="row">
+        <div class="col-md-1">Make:</div>
+        <div class="col-md-11">@Model.Make</div>
+    </div>
+    <div id="modelField" class="row">
+        <div class="col-md-1">Model:</div>
+        <div class="col-md-11">@Model.Model</div>
+    </div>
+    <div id="yearField" class="row">
+        <div class="col-md-1">Year:</div>
+        <div class="col-md-11">@Model.Year</div>
+    </div>
+    <div id="vinField" class="row">
+        <div class="col-md-1">VIN:</div>
+        <div class="col-md-11">@Model.Vin</div>
+    </div>
+    <div id="descriptionField" class="row">
+        <div class="col-md-1">Description:</div>
+        <div class="col-md-11">@Model.Description</div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+    $(document).ready(function () {
+        page.initialize();
+    });
+
+    var page = {
+        initialize: function () {
+            var message = @Html.Raw(Json.Serialize(Model.Message));
+
+            if (message.text.length > 0) {
+                page.showMessage(message.type, message.text);
+            }
+        },
+        showMessage: function (type, message) {
+            var alertType = 'danger';
+
+            if (type == 'error' || type == 0) {
+                alertType = 'danger';
+            } else if (type == 'info' || type == 1) {
+                alertType = 'primary';
+            } else if (type == 'success' || type == 2)
+                alertType = 'success';
+
+            $('#messages').append($('<div class="alert alert-' + alertType + '" role="alert">' + message + '</div>'));
+        }
+    };
+    </script>
+}

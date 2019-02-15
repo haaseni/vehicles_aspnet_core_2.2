@@ -1,0 +1,177 @@
+﻿@page "{id:int?}"
+@model Vehicles.Web.Pages.Vehicles.EditModel
+@{
+    ViewData["Title"] += "Edit";
+}
+<div class="container-fluid">
+    <div id="messages"></div>
+    <form method="post" role="form" class="form-horizontal">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="VehicleId" />
+        <div id="makeField" class="form-group row">
+            <label for="Make" class="col-md-1 col-form-label">Make:</label>
+            <div class="col-md-2">
+                <select id="Make"
+                        name="Make"
+                        class="form-control"
+                        asp-for="Make"
+                        asp-items="@(new SelectList(Model.Makes, "MakeId", "Name"))">
+                    <option></option>
+                </select>
+            </div>
+            <span asp-validation-for="Make" class="text-danger"></span>
+        </div>
+        <div id="modelField" class="form-group row">
+            <label for="Model" class="col-md-1 col-form-label">Model:</label>
+            <div class="col-md-2">
+                <select class="form-control"
+                        asp-for="Model"
+                        asp-items="@(new SelectList(Model.Models, "ModelId", "Name"))">
+                    <option></option>
+                </select>
+            </div>
+            <span asp-validation-for="Model" class="text-danger"></span>
+        </div>
+        <div id="yearField" class="form-group row">
+            <label for="Year" class="col-md-1 col-form-label">Year:</label>
+            <div class="col-md-2">
+                <select class="form-control"
+                        asp-for="Year"
+                        asp-items="@(new SelectList(Model.Years, "Year", "Year"))">
+                    <option></option>
+                </select>
+            </div>
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+        <div id="vinField" class="form-group row">
+            <label for="Vin" class="col-md-1 col-form-label">VIN:</label>
+            <div class="col-md-2">
+                <input type="text" class="form-control" asp-for="Vin" />
+            </div>
+            <span asp-validation-for="Vin" class="text-danger"></span>
+        </div>
+        <div id="descriptionField" class="form-group row">
+            <label for="Description" class="col-md-1 col-form-label">Description:</label>
+            <div class="col-md-6">
+                <textarea rows="5" class="form-control" asp-for="Description"></textarea>
+            </div>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <hr class="mb-2" />
+        <button type="submit" class="btn btn-primary" asp-page-handler="OnPostAsync">Save</button>
+    </form>
+</div>
+@section Scripts{
+<script>
+    $(document).ready(function () {
+        page.initialize();
+    });
+
+    var page = {
+        initialize: function () {
+            var message = @Html.Raw(Json.Serialize(Model.Message));
+
+            if (message && message.text.length > 0) {
+                page.showMessage(message.type, message.text);
+            }
+
+            page.registerEvents();
+        },
+        registerEvents: function() {
+            $('#Make').on('change', function (e) {
+                page.loadModels($(this).val());
+            });
+
+            $('#Model').on('change', function (e) {
+                page.loadYears($(this).val());
+            });
+        },
+        loadModels: function (makeId) {
+            if (makeId.length > 0) {
+                $.ajax({
+                    url: '/api/Makes/' + makeId + '/Models',
+                    type: 'get',
+                    dataType: 'json'
+                })
+                    .done(function (data) {
+                        $('#Model').html('');
+                        $('#Year').html('');
+
+                        if (data.length > 0)
+                            $('#Model').append($('<option value=""></option>'));
+
+                        for (var i = 0; i < data.length; i++) {
+                            $('#Model').append($('<option value="' + data[i].modelId + '">' + data[i].name + '</option>'));
+                        }
+                    })
+                    .fail(function (xhr, status, response) {
+                        page.showMessage('error', response);
+                    });
+            } else {
+                $('#Model').html('');
+                $('#Year').html('');
+            }
+        },
+        loadYears: function(modelId) {
+            if (modelId.length > 0) {
+                $.ajax({
+                    url: '/api/Models/' + modelId + '/Years',
+                    type: 'get',
+                    dataType: 'json'
+                })
+                    .done(function (data) {
+                        var dropDownData = new Array();
+
+                        for (var i = 0; i < data.length; i++) {
+                            dropDownData.push([data[i], data[i]]);
+                        }
+
+                        page.populateDropDown('Year', dropDownData);
+                        //$('#Year').html('');
+
+                        //if (data.length > 0)
+                        //    $('#Year').append($('<option value=""></option>'));
+
+                        //for (var i = 0; i < data.length; i++) {
+                        //    $('#Year').append($('<option value="' + data[i] + '">' + data[i] + '</option>'));
+                        //}
+                    })
+                    .fail(function (xhr, status, response) {
+                        page.showMessage('error', response);
+                    });
+            } else {
+                $('#Year').html('');
+            }
+        },
+        showMessage: function (type, message) {
+            var alertType = 'danger';
+
+            if (type == 'error' || type == 0) {
+                alertType = 'danger';
+            } else if (type == 'info' || type == 1) {
+                alertType = 'primary';
+            } else if (type == 'success' || type == 2)
+                alertType = 'success';
+
+            $('#messages').append($('<div class="alert alert-' + alertType + '" role="alert">' + message + '</div>'));
+        },
+        populateDropDown: function (elementId, dataArray) {
+            var element = $('#' + elementId);
+
+            if (!element)
+                return;
+
+            element.html('');
+
+            if (data.length > 0)
+                element.append($('<option value=""></option>'));
+
+            for (var i = 0; i < dataArray.length; i++) {
+                element.append($('<option value="' + data[i][0] + '">' + data[i][1] + '</option>'));
+            }
+
+            return;
+        }
+    };
+</script>
+}
