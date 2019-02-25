@@ -12950,7 +12950,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "H:\\Projects\\github\\vehicles_aspnet_core_2.2\\src\\website\\website.csproj",
-      "projectName": "Vehicles.Web",
+      "projectName": "website",
       "projectPath": "H:\\Projects\\github\\vehicles_aspnet_core_2.2\\src\\website\\website.csproj",
       "packagesPath": "C:\\Users\\IS71058\\.nuget\\packages\\",
       "outputPath": "H:\\Projects\\github\\vehicles_aspnet_core_2.2\\src\\website\\obj\\",

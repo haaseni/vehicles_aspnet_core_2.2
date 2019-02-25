@@ -1,15 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Vehicles.Web.Data;
-using Vehicles.Web.Entities;
-using Vehicles.Web.Enums;
-using Vehicles.Web.Pages.Classes;
+using website.Data;
+using website.Enums;
+using website.Pages.Classes;
 
-namespace Vehicles.Web.Pages.Vehicles
+namespace website.Pages.Vehicles
 {
     public class DetailModel : PageModel
     {

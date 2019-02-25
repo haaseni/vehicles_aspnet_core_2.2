@@ -1,6 +1,6 @@
-﻿using Vehicles.Web.Enums;
+﻿using website.Enums;
 
-namespace Vehicles.Web.Pages.Classes
+namespace website.Pages.Classes
 {
     public class PageMessage
     {

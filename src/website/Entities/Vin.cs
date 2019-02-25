@@ -1,4 +1,4 @@
-﻿namespace Vehicles.Web.Entities
+﻿namespace website.Entities
 {
     public class Vin
     {

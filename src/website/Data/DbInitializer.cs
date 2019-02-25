@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vehicles.Web.Entities;
+using website.Entities;
 
-namespace Vehicles.Web.Data
+namespace website.Data
 {
     public static class DbInitializer
     {

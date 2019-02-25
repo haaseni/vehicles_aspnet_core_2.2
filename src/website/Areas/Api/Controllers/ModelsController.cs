@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Vehicles.Web.Data;
-using Vehicles.Web.Entities;
+using website.Data;
+using website.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Vehicles.Web.Areas.Api.Controllers
+namespace website.Areas.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

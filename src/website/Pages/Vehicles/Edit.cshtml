@@ -1,12 +1,11 @@
 ﻿@page "{id:int?}"
-@model Vehicles.Web.Pages.Vehicles.EditModel
+@model website.Pages.Vehicles.EditModel
 @{
     ViewData["Title"] += "Edit";
 }
 <div class="container-fluid">
     <div id="messages"></div>
     <form method="post" role="form" class="form-horizontal">
-        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="VehicleId" />
         <div id="makeField" class="form-group row">
             <label for="Make" class="col-md-1 col-form-label">Make:</label>
@@ -87,32 +86,32 @@
             });
         },
         loadModels: function (makeId) {
-            if (makeId.length > 0) {
-                $.ajax({
-                    url: '/api/Makes/' + makeId + '/Models',
-                    type: 'get',
-                    dataType: 'json'
+            $('#Model').html('');
+            $('#Year').html('');
+            
+            $.ajax({
+                url: '/api/Makes/' + makeId + '/Models',
+                type: 'get',
+                dataType: 'json'
+            })
+                .done(function (data) {
+                    if (data && data.length > 0) {
+                        var dropDownData = new Array();
+
+                        data.forEach(function(obj) {
+                            dropDownData.push([obj.modelId, obj.name]);
+                        });
+
+                        page.populateDropDown('Model', dropDownData);
+                    }
                 })
-                    .done(function (data) {
-                        $('#Model').html('');
-                        $('#Year').html('');
-
-                        if (data.length > 0)
-                            $('#Model').append($('<option value=""></option>'));
-
-                        for (var i = 0; i < data.length; i++) {
-                            $('#Model').append($('<option value="' + data[i].modelId + '">' + data[i].name + '</option>'));
-                        }
-                    })
-                    .fail(function (xhr, status, response) {
-                        page.showMessage('error', response);
-                    });
-            } else {
-                $('#Model').html('');
-                $('#Year').html('');
-            }
+                .fail(function (xhr, status, response) {
+                    page.showMessage('error', response);
+                });
         },
-        loadYears: function(modelId) {
+        loadYears: function (modelId) {
+            $('#Year').html('');
+
             if (modelId.length > 0) {
                 $.ajax({
                     url: '/api/Models/' + modelId + '/Years',
@@ -120,27 +119,19 @@
                     dataType: 'json'
                 })
                     .done(function (data) {
-                        var dropDownData = new Array();
+                        if (data && data.length > 0) {
+                            var dropDownData = new Array();
 
-                        for (var i = 0; i < data.length; i++) {
-                            dropDownData.push([data[i], data[i]]);
+                            data.forEach(function(obj) {
+                                dropDownData.push([obj, obj]);
+                            });
+
+                            page.populateDropDown('Year', dropDownData);
                         }
-
-                        page.populateDropDown('Year', dropDownData);
-                        //$('#Year').html('');
-
-                        //if (data.length > 0)
-                        //    $('#Year').append($('<option value=""></option>'));
-
-                        //for (var i = 0; i < data.length; i++) {
-                        //    $('#Year').append($('<option value="' + data[i] + '">' + data[i] + '</option>'));
-                        //}
                     })
                     .fail(function (xhr, status, response) {
                         page.showMessage('error', response);
                     });
-            } else {
-                $('#Year').html('');
             }
         },
         showMessage: function (type, message) {

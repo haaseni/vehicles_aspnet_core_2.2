@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Vehicles.Web.Entities
+namespace website.Entities
 {
     public class Vehicle
     {

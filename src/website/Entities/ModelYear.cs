@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Vehicles.Web.Entities
+namespace website.Entities
 {
     [Table("ModelYears")]
     public class ModelYear

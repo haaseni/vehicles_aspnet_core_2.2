@@ -1,8 +1,8 @@
-﻿using Vehicles.Web.Data;
+﻿using website.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
-namespace Vehicles.Web.Areas.Api.Controllers
+namespace website.Areas.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]    

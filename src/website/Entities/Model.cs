@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Vehicles.Web.Entities
+namespace website.Entities
 {
     public class Model
     {

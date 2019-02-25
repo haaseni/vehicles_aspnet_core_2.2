@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Vehicles.Web.Data;
-using Vehicles.Web.Entities;
+using website.Data;
+using website.Entities;
 
-namespace Vehicles.Web.Pages.Vehicles
+namespace website.Pages.Vehicles
 {
     public class IndexModel : PageModel
     {

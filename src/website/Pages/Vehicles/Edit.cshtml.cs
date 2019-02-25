@@ -6,13 +6,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Vehicles.Web.Data;
-using Vehicles.Web.Entities;
-using Vehicles.Web.Enums;
-using Vehicles.Web.Pages.Classes;
+using Microsoft.AspNetCore.Authorization;
+using website.Data;
+using website.Entities;
+using website.Enums;
+using website.Pages.Classes;
 
-namespace Vehicles.Web.Pages.Vehicles
+namespace website.Pages.Vehicles
 {
+    [Authorize]
+    [AutoValidateAntiforgeryToken]
     public class EditModel : PageModel
     {
         private readonly TestContext _context;
@@ -102,7 +105,7 @@ namespace Vehicles.Web.Pages.Vehicles
                 await _context.SaveChangesAsync();
                 return RedirectToPage("Detail", new { id = vehicle.VehicleId, msg = "saved" });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Message = new PageMessage(MessageType.Error, "Error saving vehicle");
             }

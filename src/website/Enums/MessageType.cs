@@ -1,4 +1,4 @@
-﻿namespace Vehicles.Web.Enums
+﻿namespace website.Enums
 {
     public enum MessageType
     {
