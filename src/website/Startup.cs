@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 using website.Data;
 
 namespace website
@@ -41,6 +42,8 @@ namespace website
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => { options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; })
                 .ConfigureApiBehaviorOptions(options => { options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true; });
+
+            services.AddSwaggerGen(options => { options.SwaggerDoc("v1", new Info {Title = "VehiclesApi", Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +66,9 @@ namespace website
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "VehiclesApi v1"); });
 
             app.UseMvc();
         }
