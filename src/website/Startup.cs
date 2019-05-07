@@ -34,10 +34,10 @@ namespace website
             
             services.AddDbContext<TestContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("Test")));
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<TestContext>();
-
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => { options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; })

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using website.Areas.Api.Controllers;
 using website.Data;
 using website.Enums;
 using website.Pages.Classes;
@@ -32,10 +31,7 @@ namespace website.Pages.Vehicles
 
         public void OnGet(int id, string msg)
         {
-            var vehicle = _context.Vehicles
-                .Include(m => m.Model)
-                .Include(m => m.Model.Make)
-                .FirstOrDefault(v => v.VehicleId == id);
+            var vehicle = new VehiclesController(_context).Get(id);
             
             if (vehicle != null)
             {

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using website.Areas.Api.Controllers;
 using website.Data;
 using website.Entities;
 
@@ -21,11 +20,7 @@ namespace website.Pages.Vehicles
         public void OnGet()
         {
             DbInitializer.Initialize(_context); // Initialize data in database if blank
-            
-            Vehicles = _context.Vehicles
-                .Include(m => m.Model)
-                .Include(m => m.Model.Make)
-                .ToList();
+            Vehicles = new VehiclesController(_context).Get();
         }
     }
 }
