@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using website.Data;
-using website.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace website.Areas.Api.Controllers
+namespace website.Areas.Api.v1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ModelsController : ControllerBase
     {
@@ -19,22 +19,27 @@ namespace website.Areas.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public Model Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return _context.Models
+            var models = await _context.Models
                 .Include(m => m.Years)
-                .FirstOrDefault(m => m.ModelId == id);
+                .FirstOrDefaultAsync(m => m.ModelId == id);
+
+            return Ok(models);
         }
 
         [HttpGet("{id:int}/years")]
-        public List<int> Years(int id)
+        public async Task<IActionResult> Years(int id)
         {
-            return _context.Models
+            var models = await _context.Models
                 .Include(m => m.Years)
-                .FirstOrDefault(m => m.ModelId == id)?
-                .Years
+                .FirstOrDefaultAsync(m => m.ModelId == id);
+
+            var years = models.Years
                 .Select(m => m.Year)
                 .ToList();
+
+            return Ok(years);
         }
     }
 }

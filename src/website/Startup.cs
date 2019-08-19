@@ -40,8 +40,16 @@ namespace website
                 .AddEntityFrameworkStores<TestContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(options => { options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; })
-                .ConfigureApiBehaviorOptions(options => { options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true; });
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                })
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
+                });
+
+            services.AddHttpContextAccessor();
 
             services.AddSwaggerGen(options => { options.SwaggerDoc("v1", new Info {Title = "VehiclesApi", Version = "v1"}); });
         }

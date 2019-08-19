@@ -69,11 +69,13 @@
     var page = {
         initialize: function () {
             var message = @Html.Raw(Json.Serialize(Model.Message));
+            var vehicleId = @(Model.VehicleId);
 
             if (message && message.text.length > 0) {
                 page.showMessage(message.type, message.text);
             }
-
+            
+            page.loadDetails(vehicleId);
             page.registerEvents();
         },
         registerEvents: function() {
@@ -85,13 +87,60 @@
                 page.loadYears($(this).val());
             });
         },
-        loadModels: function (makeId) {
+        loadDetails(vehicleId) {
+            if (vehicleId === 0) {
+                page.loadMakes(null);
+            } else {
+                $.ajax({
+                        url: '/api/v1/vehicles/' + vehicleId,
+                        type: 'GET',
+                        dataType: 'json'
+                    })
+                    .done(function(data) {
+                        if (data) {
+                            page.loadMakes(data.makeId);
+                            page.loadModels(data.makeId, data.modelId);
+                            page.loadYears(data.modelId, data.year);
+                            $('#Vin').val(data.vin);
+                            $('#Description').val(data.description);
+                        }
+                    })
+                    .fail(function(xhr, status, response) {
+                        page.showMessage('error', response);
+                    });
+            }
+        },
+        loadMakes: function(selectedMakeId) {
+            $.ajax({
+                    url: '/api/v1/makes',
+                    type: 'GET',
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    if (data && data.length > 0) {
+                        var dropDownData = new Array();
+
+                        data.forEach(function (obj) {
+                            dropDownData.push([obj.makeId, obj.name]);
+                        });
+
+                        page.populateDropDown('Make', dropDownData, selectedMakeId);
+                    }
+                })
+                .fail(function(xhr, status, response) {
+                    page.showMessage('error', response);
+                });
+        },
+        loadModels: function (makeId, selectedModelId) {
             $('#Model').html('');
             $('#Year').html('');
-            
+
+            if (makeId.length === 0)
+                return;
+
             $.ajax({
-                url: '/api/Makes/' + makeId + '/Models',
-                type: 'get',
+                url: '/api/v1/makes/' + makeId + '/models',
+                type: 'GET',
                 dataType: 'json'
             })
                 .done(function (data) {
@@ -102,37 +151,38 @@
                             dropDownData.push([obj.modelId, obj.name]);
                         });
 
-                        page.populateDropDown('Model', dropDownData);
+                        page.populateDropDown('Model', dropDownData, selectedModelId);
                     }
                 })
                 .fail(function (xhr, status, response) {
                     page.showMessage('error', response);
                 });
         },
-        loadYears: function (modelId) {
+        loadYears: function (modelId, selectedYear) {
             $('#Year').html('');
 
-            if (modelId.length > 0) {
-                $.ajax({
-                    url: '/api/Models/' + modelId + '/Years',
-                    type: 'get',
-                    dataType: 'json'
+            if (modelId.length === 0)
+                return;
+            
+            $.ajax({
+                url: '/api/v1/models/' + modelId + '/years',
+                type: 'GET',
+                dataType: 'json'
+            })
+                .done(function (data) {
+                    if (data && data.length > 0) {
+                        var dropDownData = new Array();
+
+                        data.forEach(function(obj) {
+                            dropDownData.push([obj, obj]);
+                        });
+
+                        page.populateDropDown('Year', dropDownData, selectedYear);
+                    }
                 })
-                    .done(function (data) {
-                        if (data && data.length > 0) {
-                            var dropDownData = new Array();
-
-                            data.forEach(function(obj) {
-                                dropDownData.push([obj, obj]);
-                            });
-
-                            page.populateDropDown('Year', dropDownData);
-                        }
-                    })
-                    .fail(function (xhr, status, response) {
-                        page.showMessage('error', response);
-                    });
-            }
+                .fail(function (xhr, status, response) {
+                    page.showMessage('error', response);
+                });
         },
         showMessage: function (type, message) {
             var alertType = 'danger';
@@ -146,7 +196,7 @@
 
             $('#messages').append($('<div class="alert alert-' + alertType + '" role="alert">' + message + '</div>'));
         },
-        populateDropDown: function (elementId, dataArray) {
+        populateDropDown: function (elementId, dataArray, selectedValue) {
             var element = $('#' + elementId);
 
             if (!element)
@@ -154,11 +204,12 @@
 
             element.html('');
 
-            if (data.length > 0)
+            if (dataArray.length > 0)
                 element.append($('<option value=""></option>'));
 
             for (var i = 0; i < dataArray.length; i++) {
-                element.append($('<option value="' + data[i][0] + '">' + data[i][1] + '</option>'));
+                var selected = dataArray[i][0] === selectedValue ? 'selected' : '';
+                element.append($('<option value="' + dataArray[i][0] + '" ' + selected + '>' + dataArray[i][1] + '</option>'));
             }
 
             return;

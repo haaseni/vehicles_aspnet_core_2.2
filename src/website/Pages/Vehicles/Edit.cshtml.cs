@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json;
+using website.Areas.Api.v1.Controllers;
 using website.Data;
 using website.Entities;
 using website.Enums;
@@ -18,15 +21,19 @@ namespace website.Pages.Vehicles
     [AutoValidateAntiforgeryToken]
     public class EditModel : PageModel
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly LinkGenerator _linkGenerator;
         private readonly TestContext _context;
 
-        public EditModel(TestContext context)
+        public EditModel(TestContext context, LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
         {
             Makes = new List<Make>();
             Models = new List<Model>();
             Years = new List<ModelYear>();
 
             _context = context;
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public int VehicleId { get; set; }
@@ -63,22 +70,7 @@ namespace website.Pages.Vehicles
         
         public void OnGet(int id)
         {
-            var vehicle = _context.Vehicles
-                .Include(m => m.Model)
-                .Include(m => m.Model.Make)
-                .FirstOrDefault(v => v.VehicleId == id);
-            
-            if (vehicle != null)
-            {
-                VehicleId = vehicle.VehicleId;
-                Make = vehicle.Model.Make.MakeId.ToString() ?? string.Empty;
-                Model = vehicle.Model.ModelId.ToString() ?? string.Empty;
-                Year = vehicle.Year.ToString() ?? string.Empty;
-                Vin = vehicle.Vin;
-                Description = vehicle.Description;
-            }
-
-            Initialize();
+            VehicleId = id;
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
@@ -90,24 +82,33 @@ namespace website.Pages.Vehicles
 
             try
             {
-                var vehicle = _context.Vehicles
-                                  .Include(m => m.Model)
-                                  .FirstOrDefault(m => m.VehicleId == id) ?? new Vehicle();
+                var vehicle = new Vehicle
+                {
+                    ModelId = Convert.ToInt32(Model),
+                    Year = Convert.ToInt32(Year),
+                    Vin = Vin,
+                    Description = Description
+                };
 
-                vehicle.ModelId = Convert.ToInt32(Model);
-                vehicle.Year = Convert.ToInt32(Year);
-                vehicle.Vin = Vin;
-                vehicle.Description = Description;
+                if (id == 0)
+                {
+                    var result = await new VehiclesController(_context, _linkGenerator, _httpContextAccessor).Post(vehicle);
+                    
+                    if (result is CreatedResult createdResult)
+                        return Redirect(createdResult.Location);
 
-                if (vehicle.VehicleId == 0)
-                    _context.Vehicles.Add(vehicle);
-
-                await _context.SaveChangesAsync();
-                return RedirectToPage("Detail", new { id = vehicle.VehicleId, msg = "saved" });
+                    if(result is ObjectResult objectResult && objectResult.Value is Exception exception)
+                        throw exception;
+                }
+                else
+                {
+                    await new VehiclesController(_context, _linkGenerator, _httpContextAccessor).Put(id, vehicle);
+                    return RedirectToPage("detail", new { id = id, msg = "saved" });
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Message = new PageMessage(MessageType.Error, "Error saving vehicle");
+                Message = new PageMessage(MessageType.Error, $"Error saving vehicle");
             }
 
             return Page();

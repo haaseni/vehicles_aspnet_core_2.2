@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
-namespace website.Areas.Api.Controllers
+namespace website.Areas.Api.v1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]    
     public class VinController : ControllerBase
     {

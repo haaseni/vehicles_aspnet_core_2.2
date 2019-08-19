@@ -8,23 +8,23 @@
     <a asp-page="Edit" asp-route-id="@Model.VehicleId">Edit</a>
     <div id="makeField" class="row">
         <div class="col-md-1">Make:</div>
-        <div class="col-md-11">@Model.Make</div>
+        <div id="make" class="col-md-11"></div>
     </div>
     <div id="modelField" class="row">
         <div class="col-md-1">Model:</div>
-        <div class="col-md-11">@Model.Model</div>
+        <div id="model" class="col-md-11"></div>
     </div>
     <div id="yearField" class="row">
         <div class="col-md-1">Year:</div>
-        <div class="col-md-11">@Model.Year</div>
+        <div id="year" class="col-md-11"></div>
     </div>
     <div id="vinField" class="row">
         <div class="col-md-1">VIN:</div>
-        <div class="col-md-11">@Model.Vin</div>
+        <div id="vin" class="col-md-11"></div>
     </div>
     <div id="descriptionField" class="row">
         <div class="col-md-1">Description:</div>
-        <div class="col-md-11">@Model.Description</div>
+        <div id="description" class="col-md-11"></div>
     </div>
 </div>
 @section Scripts{
@@ -36,10 +36,32 @@
     var page = {
         initialize: function () {
             var message = @Html.Raw(Json.Serialize(Model.Message));
+            var vehicleId = @(Model.VehicleId);
 
-            if (message.text.length > 0) {
+            if (message && message.text.length > 0) {
                 page.showMessage(message.type, message.text);
             }
+
+            page.loadDetails(vehicleId);
+        },
+        loadDetails(vehicleId) {
+            $.ajax({
+                    url: '/api/v1/vehicles/' + vehicleId,
+                    type: 'GET',
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    if (data) {
+                        $('#make').html(data.makeName);
+                        $('#model').html(data.modelName);
+                        $('#year').html(data.year);
+                        $('#vin').html(data.vin);
+                        $('#description').html(data.description);
+                    }
+                })
+                .fail(function(xhr, status, response) {
+                    page.showMessage('error', response);
+                });
         },
         showMessage: function (type, message) {
             var alertType = 'danger';

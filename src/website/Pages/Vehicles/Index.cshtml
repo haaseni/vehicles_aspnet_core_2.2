@@ -4,32 +4,69 @@
 @{
     ViewData["Title"] += " Listing";
 }
-<div>
-    <a asp-page="edit">Add New Vehicle</a>
-    <hr class="md-2" />
-    <table>
-        <thead>
-            <tr>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Year</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var vehicle in Model.Vehicles)
-            {
+    <div>
+        <a asp-page="edit">Add New Vehicle</a>
+        <hr class="md-2" />
+        <div id="messages"></div>
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Model.Make.Name</a>
-                    </td>
-                    <td>
-                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Model.Name</a>
-                    </td>
-                    <td>
-                        <a asp-page="Detail" asp-route-id="@vehicle.VehicleId">@vehicle.Year.ToString()</a>
-                    </td>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Year</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody id="vehicleContent">
+            </tbody>
+        </table>
+    </div>
+@section Scripts{
+    <script>
+    $(document).ready(function () {
+        page.initialize();
+    });
+
+    var page = {
+        initialize: function () {
+            page.loadVehicles();
+        },
+        loadVehicles: function() {
+            $.ajax({
+                    url: 'api/v1/Vehicles',
+                    type: 'GET'
+                })
+                .done(function(data) {
+                    if (data && data.vehicles.length > 0) {
+                        data.vehicles.forEach(function (vehicle) {
+                            page.writeVehicleRow(vehicle);
+                        });
+                    }
+                })
+                .fail(function(xhr, status, response) {
+                    page.showMessage('error', response);
+                });
+        },
+        writeVehicleRow: function (vehicle) {
+            var detailUrl = '/vehicles/detail/' + vehicle.vehicleId;
+
+            $('#vehicleContent').append('<tr>' +
+                '<td><a href="' + detailUrl + '">' + vehicle.makeName + '</a></td>' +
+                '<td><a href="' + detailUrl + '">' + vehicle.modelName + '</a></td>' +
+                '<td><a href="' + detailUrl + '">' + vehicle.year + '</a></td>' +
+                '</tr>');
+        },
+        showMessage: function (type, message) {
+            var alertType = 'danger';
+
+            if (type == 'error' || type == 0) {
+                alertType = 'danger';
+            } else if (type == 'info' || type == 1) {
+                alertType = 'primary';
+            } else if (type == 'success' || type == 2)
+                alertType = 'success';
+
+            $('#messages').append($('<div class="alert alert-' + alertType + '" role="alert">' + message + '</div>'));
+        }
+    };
+    </script>
+}
